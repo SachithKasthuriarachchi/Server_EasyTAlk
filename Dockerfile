@@ -1,5 +1,6 @@
 FROM debian:buster
 LABEL maintainer="EasyTalk"
+
 RUN \
 	apt-get update \
 	&& apt-get -y install gcc flex bison default-libmysqlclient-dev make libssl-dev vim \
@@ -22,5 +23,6 @@ RUN \
 	&& sed "/^[# ]*DBROPW/cDBROPW=\"changeme_2\"" -i /etc/kamailio/kamctlrc \
 	&& sed "/^[# ]*DBACCESSHOST/cDBACCESSHOST=LAN_ADDR_MACHINE" -i /etc/kamailio/kamctlrc \
 	&& sed "/^[# ]*PID_FILE/cPID_FILE=\/var\/run\/kamailio\/kamailio.pid" -i /etc/kamailio/kamctlrc
+
 VOLUME /etc/kamailio
 CMD ["bash"]
