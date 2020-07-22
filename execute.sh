@@ -8,7 +8,7 @@ sed "/#!define DBURL \"mysql:\/\/kamailio:kamailiorw@localhost\/kamailio\"/c#!de
 sed "/^[# ]*SIP_DOMAIN/cSIP_DOMAIN=$(hostname -I)" -i /etc/kamailio/kamctlrc
 sed "/# alias=\"sip.mydomain.com\"/calias=$(hostname -I)" -i /etc/kamailio/kamailio.cfg
 
-echo 'Enter a password for the Kamailio fatabase user(read only access): '
+echo 'Enter a password for the Kamailio database user(read only access): '
 read PASSWORDRO
 
 sed "/^[# ]*DBROPW/cDBROPW=\"$PASSWORDRO\"" -i /etc/kamailio/kamctlrc
