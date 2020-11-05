@@ -18,7 +18,7 @@ mongoClient.connect(url,{useNewUrlParser: true, useUnifiedTopology: true}, (err,
             try {
                 //generating the salt and the hashed password using bcrypt
                 const hashedPassword = await bcrypt.hash(req.body.password, 10)
-                
+            
                 const newUser = {
                     name: req.body.name,
                     password: hashedPassword
@@ -45,16 +45,22 @@ mongoClient.connect(url,{useNewUrlParser: true, useUnifiedTopology: true}, (err,
 
         app.post('/signin', async (req, res) => {
             const query = {name: req.body.name}
-            table.findOne(query, (err, result) => {
+            table.findOne(query, async (err, result) => {
                 if (result == null) {
                     res.status(404).send('No such username exists')
                 } else {
+                    console.log("Before trying")
                     try {
-                        if (await bcrypt.compare(req.body.password, result.password)) {
-                            res.send('Successfully signed in')
-                        } else {
-                            res.send('Wrong password')
-                        }
+                        if (await bcrypt.compare(req.body.password, result.password, (err, same) => {
+                            if (same) {
+                                console.log(req.body.password)
+                                console.log(result.password)
+                                res.status(200).send('Successfully signed in')
+                            } else {
+                                console.log('Wrong Password')
+                                res.status(404).send('Wrong password')
+                            }
+                        })) return
                     } catch {
                         res.status(500).send()
                     }
