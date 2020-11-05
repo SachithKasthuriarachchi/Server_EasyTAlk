@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const mongoClient = require('mongodb').MongoClient
+const bcrypt = require('bcrypt')
 const url = "mongodb://localhost:27017"
 
 app.use(express.json())
@@ -13,15 +14,19 @@ mongoClient.connect(url,{useNewUrlParser: true, useUnifiedTopology: true}, (err,
         const table = database.collection('credentials')
         
         //Requests
-        app.post('/signup', (req, res) => {
-            const newUser = {
-                name: req.body.name,
-                password: req.body.password
-            }
+        app.post('/signup', async (req, res) => {
+            try {
+                //generating the salt and the hashed password using bcrypt
+                const hashedPassword = await bcrypt.hash(req.body.password, 10)
+                
+                const newUser = {
+                    name: req.body.name,
+                    password: hashedPassword
+                }
 
-            //Checking if there is no users with same name
-            const query = {name: newUser.name}
-            table.findOne(query, (err, result) => {
+                //Checking if there is no users with same name
+                const query = {name: newUser.name}
+                table.findOne(query, (err, result) => {
                 if (result == null) {
                     table.insertOne(newUser, (err, result) => {
                         res.status(200).send()
@@ -29,6 +34,30 @@ mongoClient.connect(url,{useNewUrlParser: true, useUnifiedTopology: true}, (err,
                 } else {
                     //bad request(user already registered)
                     res.status(400).send()
+                }
+            })
+            } catch {
+                //If something went wrong
+                res.status(500).send()
+            }
+            
+        })
+
+        app.post('/signin', async (req, res) => {
+            const query = {name: req.body.name}
+            table.findOne(query, (err, result) => {
+                if (result == null) {
+                    res.status(404).send('No such username exists')
+                } else {
+                    try {
+                        if (await bcrypt.compare(req.body.password, result.password)) {
+                            res.send('Successfully signed in')
+                        } else {
+                            res.send('Wrong password')
+                        }
+                    } catch {
+                        res.status(500).send()
+                    }
                 }
             })
         })
