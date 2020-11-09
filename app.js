@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const mongoClient = require('mongodb').MongoClient
 const bcrypt = require('bcrypt')
+const {exec} = require('child_process')
 const url = "mongodb://localhost:27017"
 
 app.use(express.json())
@@ -31,6 +32,15 @@ mongoClient.connect(url,{useNewUrlParser: true, useUnifiedTopology: true}, (err,
                     table.insertOne(newUser, (err, result) => {
                         res.status(200).send()
                     })
+                    exec('kamctl add '+ newUser.name + ' ' + newUser.password,(err, stdOut, stdErr) => {
+                        if (err) {
+                            console.log(err)
+                        } else {
+                            console.log(`stdout: ${stdOut}`)
+                            console.log(`stderr: ${stdErr}`)
+                        }
+                    })
+
                 } else {
                     //bad request(user already registered)
                     res.status(400).send()
