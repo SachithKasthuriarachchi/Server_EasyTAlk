@@ -249,4 +249,18 @@ You can add test users to the kamailio server using the following command format
 >> kamctl add username password
 ```
 Note that whenever the IP address of your machine changes you need to update the relevant configuration with your new IP. Otherwise, the server will not run.
+
 ##### Running the Authentication Server
+
+First of all start the Mongo server by running the following command in a separate terminal.
+
+```sh
+>> sudo mongod
+````
+**Remember!** never close this terminal while the server is running, otherwise it will log an error.
+Then, clone this repository, `cd` into it and execute the following command.
+
+```sh
+>> node app.js
+```
+If everything went fine, you will see a message "Server Started" in your log!
