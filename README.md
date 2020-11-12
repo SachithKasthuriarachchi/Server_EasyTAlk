@@ -13,6 +13,9 @@ In this document we are guiding you to set-up your own VoIP server compatible wi
   - MongoDB
 - Installing Kamailio Server
 - Configuring Kamailio Server
+  - Configuring kamctlrc
+  - Configuring kamailio.cfg
+  - Configuring kamailio
 
 ### Installation Guide
 #### Installing Dependencies for Authentication Server
@@ -90,8 +93,8 @@ Before following any command you need to know the IP address of your machine. If
 ```sh
 >> hostname -I
 ```
-
-Then, first edit the *kamctlrc* file located on the `/etc/kamailio` folder. We are using *nano* editor for this tutorial.
+##### Configuring kamctlrc
+Edit the *kamctlrc* file located on the `/etc/kamailio` folder. We are using *nano* editor for this tutorial.
 
 ```sh
 >> nano -w /etc/kamailio/kamctlrc
