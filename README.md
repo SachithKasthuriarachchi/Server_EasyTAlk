@@ -7,7 +7,7 @@ This is the server responsible for the SIP call handling in EasyTalk mobile appl
 ## Quick Start Guide
 In this document we are guiding you to set-up your own VoIP server compatible with the EasyTalk app. We will walk you through the following topics.(Please note that this guide is based on the Ubuntu 20.04, the commands can be slightly changed for other linux based systems)
 
-- Installing dependencies for Authentication server.
+- Installing Dependencies for Authentication Server
   - Visual Studio Code and Git
   - Node.js and npm
   - MongoDB
@@ -15,7 +15,7 @@ In this document we are guiding you to set-up your own VoIP server compatible wi
 - Configuring Kamailio Server
 
 ### Installation Guide
-#### Installing dependencies for Authentication server.
+#### Installing Dependencies for Authentication Server
 ##### Visual Studio Code and GIT
 
 Installing VS Code is as easy as executing the following command.
@@ -53,7 +53,7 @@ The MongoDB is needed to store the credentials of the users in Authentication se
 >> sudo apt install mongodb-org
 ```
 
-#### Installing Kamailio Server.
+#### Installing Kamailio Server
 
 First of all, install the necessary dependencies required to run the Kamailio server on your machine using following commands.
 
@@ -84,3 +84,47 @@ Next, install the Kamailio server and related modules as follows.
 Now, we have installed all the necessary dependencies in our machine to run the two servers. Next, we need to configure our Kamailio server.
 
 #### Configuring Kamailio Server
+
+Before following any command you need to know the IP address of your machine. If you are installing this server on a Virtual Machine it is easy if you select the *bridged adapter* for the network. Then, execute the following command and you will have the IP address of your machine.
+
+```sh
+>> hostname -I
+```
+
+Then, first edit the *kamctlrc* file located on the `/etc/kamailio` folder. We are using *nano* editor for this tutorial.
+
+```sh
+>> nano -w /etc/kamailio/kamctlrc
+```
+Now, edit this file as below.
+1. Start by uncommenting *SIP_DOMAIN* and insert the **IP address of your machiene**.
+1. Uncomment *DBENGINE* line and make certain it points to *MYSQL*.
+1. Uncomment the following line: *DBRWUSER="kamailio"*.
+1. Uncomment the *DBRWPW* line and insert **your own password** between the quotes.
+1. Uncomment the following line: *DBROUSER="kamailioro"*.
+1. Uncomment the *DBROPW* line and **insert a different password** between the quotes.
+1. Uncomment the *DBACCESSHOST* line and insert the **IP address of your machiene**.
+1. Uncomment the *CHARSET* line and make it point to *"latin1"*.
+1. Uncomment the *INSTALL_EXTRA_TABLES* line and make it equal to *yes*.
+1. Uncomment the *INSTALL_PRESENCE_TABLES* line and make it equal to *yes*.
+1. Uncomment the *INSTALL_DBUID_TABLES* line and make it equal to *yes*.
+1. Drop down near the bottom of the file and uncomment the *PID_FILE* line.
+1. Hit `ctrl + o` and hit ‘enter’.
+1. Hit `ctrl + x` to exit.
+
+The edited *kamctlrc* file will look like as follows(Note that we have ommited the comments for simplicity)
+
+```c++
+SIP_DOMAIN=<your IP address>
+DBENGINE=MYSQL
+DBRWUSER="kamailio"
+DBRWPW="password of your choice"
+DBROUSER="kamailioro"
+DBROPW="password of your choice"
+DBACCESSHOST=<your IP address>
+CHARSET="latin1"
+INSTALL_EXTRA_TABLES=yes
+INSTALL_PRESENCE_TABLES=yes
+INSTALL_DBUID_TABLES=yes
+PID_FILE=/var/run/kamailio/kamailio.pid
+```
