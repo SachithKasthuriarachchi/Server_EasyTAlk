@@ -1,0 +1,25 @@
+{
+  "name": "server_easyTAlk",
+  "version": "1.0.0",
+  "description": "The Containerized Kamailio Server for the EasyTalk Mobile App and a Node server for authenticating users",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongodb": "^3.6.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SachithKasthuriarachchi/Server_EasyTAlk.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SachithKasthuriarachchi/Server_EasyTAlk/issues"
+  },
+  "homepage": "https://github.com/SachithKasthuriarachchi/Server_EasyTAlk#readme"
+}
