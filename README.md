@@ -1,4 +1,4 @@
-# Server_EasyTAlk
+# Server_EasyTalk
 ## Introduction
 This is the server responsible for the SIP call handling in EasyTalk mobile application. The app.js handles the user authentication part while the dockerfile represents the Kamailio server responsible for the SIP call handling. The authentication server listens on port 3000 while the Kamailio server listens to ports 5060 and 5061 for SIP requests.
 
@@ -16,6 +16,10 @@ In this document we are guiding you to set-up your own VoIP server compatible wi
   - Configuring kamctlrc
   - Configuring kamailio.cfg
   - Configuring kamailio
+  - Generating the Database
+- Running the Server
+  - Running the Kamailio Server
+  - Running the Authentication Server
 
 ### Installation Guide
 #### Installing Dependencies for Authentication Server
@@ -115,7 +119,7 @@ Now, edit this file as below.
 1. Hit `ctrl + o` and hit ‘enter’.
 1. Hit `ctrl + x` to exit.
 
-The edited *kamctlrc* file will look like as follows(Note that we have ommited the comments for simplicity)
+The edited *kamctlrc* file will look like as follows(Note that we have omitted the comments for simplicity)
 
 ```c++
 SIP_DOMAIN=<your IP address>
@@ -131,3 +135,118 @@ INSTALL_PRESENCE_TABLES=yes
 INSTALL_DBUID_TABLES=yes
 PID_FILE=/var/run/kamailio/kamailio.pid
 ```
+Then, edit the *kamailio.cfg* file as follows.
+
+##### Configuring kamailio.cfg
+
+Edit the *kamalio.cfg* file located on the `/etc/kamailio` folder.
+
+```sh
+>> nano -w /etc/kamailio/kamalio.cfg
+```
+
+Make the top of the file look as below (in nano you can simply copy and paste the following configuration using `ctrl`+`shift`+`v`)
+
+```sh
+#!KAMAILIO
+#!define WITH_MYSQL
+#!define WITH_AUTH
+#!define WITH_USRLOCDB
+#!define WITH_ANTIFLOOD
+#!define WITH_PRESENCE
+#!define WITH_ACCDB
+```
+- Next, find the line: *#!define DBURL “mysql://kamailio:**kamailiorw**@localhost/kamailio”* and Change the **kamailiorw** entry to the password you entered in step 4 in the previous section.
+
+- Then, find the line containing the *alias* and change it as `alias=<IP address of the machine>` and uncomment the line.
+
+- Then, find the line containing the *listen* and change it as `listen=udp:<IP address of your machine>:5060` and uncomment the line. (ex: `listen=udp:192.168.1.1:5060`)
+
+- Search for the line containing **friendly-scanner** (this can be done by pressing `F6` and then typing the term and hitting `enter` in nano editor).
+
+- Immediately above that line, cut-and-paste this addition from Fred Posner at AstriCon
+```c++
+  if($ua =~ "(friendly-scanner|sipvicious|sipcli)") {
+    xlog("L_INFO","script kiddies from IP:$si:$sp - $ua n");
+    $sht(ipban=>$si) = 1;
+    sl_send_reply("200", "OK");
+    exit;
+  }
+  if($au =~ "(=)|(--)|(')|(#)|(%27)|(%24)" and $au != $null) {
+    xlog("L_INFO","[R-REQINIT:$ci] sql injection from IP:$si:$sp - $au n");
+    $sht(ipban=>$si) = 1;
+    exit;
+  }
+```
+- Hit `ctrl + o` and hit ‘enter’.
+- Hit `ctrl + x` to exit.
+
+##### Configuring kamailio
+
+Start editing by executing the below command
+```sh
+>> nano -w /etc/default/kamailio
+```
+The file should look as follows (again, we have omitted the comments for the sake of simplicity).
+
+```sh
+RUN_KAMAILIO=yes
+USER=kamailio
+GROUP=kamailio
+SHM_MEMORY=128
+PKG_MEMORY=4
+CFGFILE=/etc/kamailio/kamailio.cfg
+```
+
+##### Generating the Database
+
+First of all execute the following command to generate the necessary MySQL databases.
+
+```sh
+>> kamdbctl create
+```
+Then, login to the MySQL shell as the root user. (Please make sure to replace the **password** in the following command with your configured password for ~~kamailio user~~ MySQL root user that you have entered under the ```>> sudo mysql_secure_installation``` command)
+
+```sh
+>> mysql -u root -ppassword kamailio
+```
+**Yes! there is no space between 'p' and 'password'**
+
+In the MySQL prompt execute the following commands one by one.
+
+```SQL
+>> ALTER TABLE acc ADD COLUMN src_user VARCHAR(64) NOT NULL DEFAULT '';
+>> ALTER TABLE acc ADD COLUMN src_domain VARCHAR(128) NOT NULL DEFAULT '';
+>> ALTER TABLE acc ADD COLUMN src_ip VARCHAR(64) NOT NULL DEFAULT '';
+>> ALTER TABLE acc ADD COLUMN dst_ouser VARCHAR(64) NOT NULL DEFAULT '';
+>> ALTER TABLE acc ADD COLUMN dst_user VARCHAR(64) NOT NULL DEFAULT '';
+>> ALTER TABLE acc ADD COLUMN dst_domain VARCHAR(128) NOT NULL DEFAULT '';
+>> ALTER TABLE missed_calls ADD COLUMN src_user VARCHAR(64) NOT NULL DEFAULT '';
+>> ALTER TABLE missed_calls ADD COLUMN src_domain VARCHAR(128) NOT NULL DEFAULT '';
+>> ALTER TABLE missed_calls ADD COLUMN src_ip VARCHAR(64) NOT NULL DEFAULT '';
+>> ALTER TABLE missed_calls ADD COLUMN dst_ouser VARCHAR(64) NOT NULL DEFAULT '';
+>> ALTER TABLE missed_calls ADD COLUMN dst_user VARCHAR(64) NOT NULL DEFAULT '';
+>> ALTER TABLE missed_calls ADD COLUMN dst_domain VARCHAR(128) NOT NULL DEFAULT '';
+>> quit
+```
+
+####  Running the Server
+##### Running the Kamailio Server
+To run the Kamailio server just execute the following command in the terminal
+
+```sh
+>> sudo systemctl start kamailio
+```
+You can check the status of your kamailio server using the `status` command as follows.
+```sh
+>> sudo systemctl status kamailio
+```
+If everything went OK, you will see a **green-coloured dot** in your terminal. Else, you need to recheck the kamailio configurations you have made in the above steps.
+
+You can add test users to the kamailio server using the following command format.
+
+```sh
+>> kamctl add username password
+```
+Note that whenever the IP address of your machine changes you need to update the relevant configuration with your new IP. Otherwise, the server will not run.
+##### Running the Authentication Server
