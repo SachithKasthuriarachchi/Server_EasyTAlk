@@ -32,7 +32,7 @@ mongoClient.connect(url,{useNewUrlParser: true, useUnifiedTopology: true}, (err,
                     table.insertOne(newUser, (err, result) => {
                         res.status(200).send()
                     })
-                    exec(`kamctl add ${newUser.name} ${req.body.password}`,(err, stdOut, stdErr) => {
+                    exec(`sudo kamctl add ${newUser.name} ${req.body.password}`,(err, stdOut, stdErr) => {
                         if (err) {
                             console.log(err)
                         } else {
