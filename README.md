@@ -256,7 +256,13 @@ First of all start the Mongo server by running the following command in a separa
 
 ```sh
 >> sudo mongod
-````
+```
+
+If you are running MongoDB for the first time, there might not be the `/data/db` directory created. Therefore, you have to create this directory if it is not in the system.
+
+```sh
+>> sudo mkdir -p /data/db
+```
 **Remember!** never close this terminal while the server is running, otherwise it will log an error.
 Then, clone this repository, `cd` into it and execute the following command.
 
