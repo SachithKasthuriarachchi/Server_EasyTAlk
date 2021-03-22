@@ -92,7 +92,7 @@ Now, we have installed all the necessary dependencies in our machine to run the 
 
 #### Configuring Kamailio Server
 
-**You can simply copy the contents of the [etc/kamailio](etc/kamailio) and [etc/default](etc/default) folders to your server's `/etc/kamailio` and `/etc/default` folders respectively and change only the IP addresses as below.** (Note: You might need to change the passwords for kamailio database as described in the following sections)
+**You can simply copy the contents of the [etc/kamailio](etc/kamailio) and [etc/default](etc/default) folders to your server's `/etc/kamailio` and `/etc/default` folders respectively and change only the IP addresses as below.** Then you can continue this journey from [here](https://github.com/SachithKasthuriarachchi/Server_EasyTAlk/blob/master/README.md#generating-the-database). (Note: You might need to change the passwords for kamailio database as described in the following sections)
 
 Before following any command you need to know the IP address of your machine. If you are installing this server on a Virtual Machine it is easy if you select the *bridged adapter* for the network. Then, execute the following command and you will have the IP address of your machine.
 
