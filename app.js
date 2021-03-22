@@ -1,4 +1,12 @@
 const express = require('express')
+const https = require('https')
+const fs = require('fs')
+var key = fs.readFileSync(__dirname + '/server.key')
+var cert = fs.readFileSync(__dirname + '/server.cert')
+var options = {
+    key: key,
+    cert: cert
+}
 const app = express()
 const mongoClient = require('mongodb').MongoClient
 const bcrypt = require('bcrypt')
@@ -32,7 +40,7 @@ mongoClient.connect(url,{useNewUrlParser: true, useUnifiedTopology: true}, (err,
                     table.insertOne(newUser, (err, result) => {
                         res.status(200).send()
                     })
-                    exec(`sudo kamctl add ${newUser.name} ${req.body.password}`,(err, stdOut, stdErr) => {
+                    exec(`kamctl add ${newUser.name} ${req.body.password}`,(err, stdOut, stdErr) => {
                         if (err) {
                             console.log(err)
                         } else {
@@ -43,7 +51,7 @@ mongoClient.connect(url,{useNewUrlParser: true, useUnifiedTopology: true}, (err,
 
                 } else {
                     //bad request(user already registered)
-                    res.status(400).send()
+                    res.status(400).send('User has already registered')
                 }
             })
             } catch {
@@ -79,6 +87,8 @@ mongoClient.connect(url,{useNewUrlParser: true, useUnifiedTopology: true}, (err,
         })
     }
 })
-app.listen(3000, () => {
+
+var server = https.createServer(options, app)
+server.listen(3000, () => {
     console.log("Server Started!")
 })
