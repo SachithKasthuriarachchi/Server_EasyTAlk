@@ -4,6 +4,7 @@
   "description": "The Containerized Kamailio Server for the EasyTalk Mobile App and a Node server for authenticating users",
   "main": "app.js",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "express": "^4.17.1",
     "mongodb": "^3.6.2"
   },
