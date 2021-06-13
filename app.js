@@ -1,11 +1,11 @@
 const express = require('express')
 const https = require('https')
 const fs = require('fs')
-var key = fs.readFileSync(__dirname + '/server.key')
-var cert = fs.readFileSync(__dirname + '/server.cert')
+// var key = fs.readFileSync(__dirname + '/server.key')
+// var cert = fs.readFileSync(__dirname + '/server.cert')
 var options = {
-    key: key,
-    cert: cert
+//     key: key,
+//     cert: cert
 }
 const app = express()
 const mongoClient = require('mongodb').MongoClient
